@@ -256,6 +256,11 @@ class Manager {
   }
 
   handleSetValidators(obj) {
+    if(obj.validators === null) {
+      delete this.stores[obj.formName].validators[obj.name];
+      return;
+    }
+    
     this.initForm(obj.formName);
 
     this.stores[obj.formName].validators[obj.name] = {
