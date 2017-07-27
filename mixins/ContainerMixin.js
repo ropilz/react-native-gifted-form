@@ -15,6 +15,7 @@ module.exports = {
     scrollOnTap: React.PropTypes.bool,
     scrollEnabled: React.PropTypes.bool,
     formStyles: React.PropTypes.object,
+    showInlineErrorMessage: React.PropTypes.bool
     // navigator: ,
   },
 
@@ -25,6 +26,7 @@ module.exports = {
       scrollEnabled: true,
       formStyles: {},
       navigator: null, // @todo test when null if crash
+      showInlineErrorMessage: true
     }
   },
 
@@ -105,7 +107,7 @@ module.exports = {
           onBlur: this.handleBlur,
           onValidation: this.handleValidation,
           onValueChange: this.handleValueChange,
-          showInlineErrorMessage: this.props.showInlineErrorMessage
+          showInlineErrorMessage: child.props.showInlineErrorMessage !== 'undefined' ? child.props.showInlineErrorMessage : this.props.showInlineErrorMessage
         });
       }
     });
