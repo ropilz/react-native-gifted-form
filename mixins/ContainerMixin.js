@@ -105,6 +105,7 @@ module.exports = {
           onBlur: this.handleBlur,
           onValidation: this.handleValidation,
           onValueChange: this.handleValueChange,
+          showInlineErrorMessage: this.props.showInlineErrorMessage
         });
       }
     });

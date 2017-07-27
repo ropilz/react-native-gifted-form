@@ -29,6 +29,7 @@ module.exports = {
     validateOnEmpty: React.PropTypes.bool,
     // If we want to store the state elsewhere (Redux store, for instance), we can use value and Form's onValueChange prop
     value: React.PropTypes.any,
+    showInlineErrorMessage: React.PropTypes.bool,
   },
 
   getDefaultProps() {
@@ -45,6 +46,7 @@ module.exports = {
       onFocus: () => {},
       onBlur: () => {},
       validateOnEmpty: false,
+      showInlineErrorMessage: true
     };
   },
 
@@ -159,6 +161,10 @@ module.exports = {
 
   // @todo options enable live checking
   _renderValidationError() {
+    if(!this.props.showInlineErrorMessage) {
+      return null;
+    }
+
     let hasValue = typeof this.state.value !== 'undefined' && this.state.value !== '';
 
     if (this.props.validateOnEmpty) {
