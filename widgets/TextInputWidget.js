@@ -68,6 +68,7 @@ module.exports = React.createClass({
             onChangeText={this._onChange}
             value={this.state.value}
           />
+          {this._renderRightContent()}
           {this._renderValidationError()}
           {this._renderUnderline()}
         </View>
@@ -90,6 +91,7 @@ module.exports = React.createClass({
             onChangeText={this._onChange}
             value={this.state.value}
           />
+          {this._renderRightContent()}
         </View>
         {this._renderValidationError()}
         {this._renderUnderline()}

@@ -190,6 +190,12 @@ module.exports = {
     );
   },
 
+  _renderRightContent() {
+    if(this.props.rightContent) {
+      return this.props.rightContent;
+    }
+  },
+
   _renderImage() {
     var validators = null;
     if (this.props.displayValue) {
