@@ -13,8 +13,11 @@ module.exports = React.createClass({
     return {
       type: 'SelectWidget',
       multiple: false,
-      onSelect: () => {},
-      onClose: () => {},
+      onSelect: () => {
+      },
+      onClose: () => {
+      },
+      keywords: ''
     };
   },
 
@@ -25,28 +28,34 @@ module.exports = React.createClass({
   },
 
   render() {
-    this._childrenWithProps = React.Children.map(this.props.children, (child, idx) => {
+    const {keywords} = this.props;
+    this._childrenWithProps = [];
+    React.Children.forEach(this.props.children, (child, idx) => {
       var val = child.props.value || child.props.title;
+      var title = child.props.title || '';
+      if (title.toLowerCase().indexOf(keywords.toLowerCase()) > -1) {
+        let elem = React.cloneElement(child, {
+          formStyles: this.props.formStyles,
+          openModal: this.props.openModal,
+          formName: this.props.formName,
+          navigator: this.props.navigator,
+          onFocus: this.props.onFocus,
+          onBlur: this.props.onBlur,
+          onValidation: this.props.onValidation,
+          onValueChange: this.props.onValueChange,
 
-      return React.cloneElement(child, {
-        formStyles: this.props.formStyles,
-        openModal: this.props.openModal,
-        formName: this.props.formName,
-        navigator: this.props.navigator,
-        onFocus: this.props.onFocus,
-        onBlur: this.props.onBlur,
-        onValidation: this.props.onValidation,
-        onValueChange: this.props.onValueChange,
+          name: this.props.name + '{' + val + '}',
+          ref: this.props.name + '{' + val + '}',
+          value: val,
+          unSelectAll: this.unSelectAll,
 
-        name: this.props.name+'{'+val+'}',
-        ref: this.props.name+'{'+val+'}',
-        value: val,
-        unSelectAll: this.unSelectAll,
+          multiple: this.props.multiple,
+          onClose: this.props.onClose, // got from ModalWidget
+          onSelect: this.props.onSelect, // got from DayPickerWidget
+        });
 
-        multiple: this.props.multiple,
-        onClose: this.props.onClose, // got from ModalWidget
-        onSelect: this.props.onSelect, // got from DayPickerWidget
-      });
+        this._childrenWithProps.push(elem);
+      }
     });
 
     return (
