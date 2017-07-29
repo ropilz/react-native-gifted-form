@@ -1,4 +1,5 @@
 var validatorjs = require('validator');
+var listeners = {};
 
 function doValidateOne(k = '', value = undefined, validators = {}) {
   var isValid = null;
@@ -6,17 +7,19 @@ function doValidateOne(k = '', value = undefined, validators = {}) {
   var result = [];
 
   for (var i = 0; i < validate.length; i++) {
-    if (!validate[i].validator || validate[i].validator === 'undefined') { continue; }
+    if (!validate[i].validator || validate[i].validator === 'undefined') {
+      continue;
+    }
 
     var args = validate[i].arguments;
-    args = !Array.isArray(args) ? [ args ] : args;
+    args = !Array.isArray(args) ? [args] : args;
     var clonedArgs = args.slice(0);
     clonedArgs.unshift(value);
 
 
     validate[i].message = validate[i].message || '';
 
-    var message = validate[i].message.replace('{PATH}', "'"+k+"'");
+    var message = validate[i].message.replace('{PATH}', "'" + k + "'");
 
     var title = validators.title;
     if (title) {
@@ -41,7 +44,7 @@ function doValidateOne(k = '', value = undefined, validators = {}) {
       });
     } else {
       if (typeof validatorjs[validate[i].validator] === 'undefined') {
-        console.warn('GiftedForm Error: Validator is not correct for: '+k);
+        console.warn('GiftedForm Error: Validator is not correct for: ' + k);
         continue;
       }
 
@@ -66,7 +69,8 @@ function doValidateOne(k = '', value = undefined, validators = {}) {
         message,
         value: clonedArgs[0],
         title: title || k,
-      });  }
+      });
+    }
   }
   return result;
 }
@@ -170,16 +174,42 @@ class Manager {
     return {};
   }
 
+  on(formName, eventName, cb) {
+    var attr = `${formName}.${eventName}`;
+    if (!listeners[attr]) {
+      listeners[attr] = [];
+    }
+    listeners[attr].push(cb);
+  }
+
+  off(formName, eventName, cb) {
+    var attr = `${formName}.${eventName}`;
+    if (listeners[attr]) {
+      listeners[attr] = listeners[attr].filter((c) => c !== cb);
+    }
+  }
+
+  fire(formName, eventName) {
+    var attr = `${formName}.${eventName}`;
+    if (listeners[attr]) {
+      listeners[attr].forEach((cb) => {
+        cb();
+      });
+    }
+  }
+
   // reset only the values + validators + etc.
   // if you reset the validators, you need to re-mount the form
   reset(formName) {
     this.handleReset(formName);
+    this.fire(formName, 'resetViewValues');
   }
 
   // reset only the values
   // useful if the GiftedForm is not unmounted
   resetValues(formName) {
     this.handleResetValues(formName);
+    this.fire(formName, 'resetViewValues');
   }
 
   clearSelect(formName, name) {
@@ -251,16 +281,20 @@ class Manager {
   // =================
   initForm(formName) {
     if (typeof this.stores[formName] === 'undefined') {
-      this.stores[formName] = {values: {}, validators: {}};
+      this.stores[formName] = {
+        values: {}, validators: {}, onReset: (cb) => {
+          cb();
+        }
+      };
     }
   }
 
   handleSetValidators(obj) {
-    if(obj.validators === null) {
+    if (obj.validators === null) {
       delete this.stores[obj.formName].validators[obj.name];
       return;
     }
-    
+
     this.initForm(obj.formName);
 
     this.stores[obj.formName].validators[obj.name] = {
@@ -278,7 +312,9 @@ class Manager {
   handleReset(formName) {
     this.initForm(formName);
 
-    this.stores[formName] = {values: {}, validators: {}};
+    // this.stores[formName] = {values: {}, validators: {}};
+    this.stores[formName].values = {};
+    this.stores[formName].validators = {};
   }
 
   handleResetValues(formName) {
