@@ -23,7 +23,7 @@ module.exports = React.createClass({
 
   unSelectAll() {
     React.Children.forEach(this._childrenWithProps, (child, idx) => {
-      this.refs[child.ref]._onChange(false);
+      this.refs && this.refs[child.ref] && this.refs[child.ref]._onChange(false);
     });
   },
 
