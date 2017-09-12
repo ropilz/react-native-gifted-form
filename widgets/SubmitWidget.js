@@ -33,6 +33,11 @@ module.exports = React.createClass({
     activityIndicatorColor: React.PropTypes.string,
     requiredMessage: React.PropTypes.string,
     notValidMessage: React.PropTypes.string,
+    children: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.node,
+      React.PropTypes.element
+    ]),
   },
 
   getInitialState() {
@@ -77,6 +82,18 @@ module.exports = React.createClass({
     }
   },
 
+  _renderChildren() {
+    let hasChildren = false;
+    React.Children.forEach(this.props.children, (item) => {
+      hasChildren = true;
+    });
+    if(hasChildren){
+      return this.props.children;
+    } else {
+      return this.props.title;
+    }
+  },
+
   render() {
     return (
       <View>
@@ -94,7 +111,7 @@ module.exports = React.createClass({
 
           onPress={() => this._doSubmit()}
         >
-          {this.props.title}
+          {this._renderChildren()}
         </Button>
       </View>
     );
