@@ -46,13 +46,14 @@ module.exports = React.createClass({
   },
 
   _renderRow() {
-    
+    const { numberOfLines } = this.props;
+    const _numberOfLines = numberOfLines || 1;
     if (this.props.inline === false) {
       return (
         <View style={this.getStyle(['rowContainer'])}>
           <View style={this.getStyle(['titleContainer'])}>
             {this._renderImage()}
-            <Text numberOfLines={1} style={this.getStyle(['textInputTitle'])}>{this.props.title}</Text>
+            <Text numberOfLines={_numberOfLines} style={this.getStyle(['textInputTitle'])}>{this.props.title}</Text>
           </View>
           
           <TextInput
